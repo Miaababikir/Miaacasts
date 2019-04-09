@@ -38,4 +38,9 @@ class User extends Authenticatable
         return $this->confirm_token == null;
     }
 
+    public function isAdmin()
+    {
+        return in_array($this->email, config('miaacasts.administrators'));
+    }
+
 }

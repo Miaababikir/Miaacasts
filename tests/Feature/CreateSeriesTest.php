@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -14,6 +15,8 @@ class CreateSeriesTest extends TestCase
     /** @test */
     public function a_can_create_a_series()
     {
+        $this->loginAdmin();
+
         Storage::fake(config('filesystems.default'));
 
         $this->post('/admin/series', [
@@ -34,6 +37,8 @@ class CreateSeriesTest extends TestCase
     /** @test */
     public function a_series_must_be_created_with_title()
     {
+        $this->loginAdmin();
+
         try {
             $this->post('/admin/series', [
                 'description' => 'Lorem ipsum set meit',
@@ -47,6 +52,9 @@ class CreateSeriesTest extends TestCase
     /** @test */
     public function a_series_must_be_created_with_description()
     {
+
+        $this->loginAdmin();
+
         try {
             $this->post('/admin/series', [
                 'title' => 'Lorem ipsum set meit',
@@ -60,6 +68,9 @@ class CreateSeriesTest extends TestCase
     /** @test */
     public function a_series_must_be_created_with_image()
     {
+
+        $this->loginAdmin();
+
         try {
             $this->post('/admin/series', [
                 'title' => 'Lorem ipsum set meit',
@@ -69,5 +80,15 @@ class CreateSeriesTest extends TestCase
         } catch (\Exception $exception) {
             $this->assertTrue($exception instanceof ValidationException);
         }
+    }
+
+    /** @test */
+    public function only_admin_can_create_series()
+    {
+        $this->actingAs(create(User::class));
+
+        $this->post('/admin/series')
+            ->assertSessionHas('error', 'You are not authorized to preform this action')
+            ->assertRedirect('/');
     }
 }
