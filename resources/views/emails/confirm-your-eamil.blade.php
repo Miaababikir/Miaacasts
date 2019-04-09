@@ -1,10 +1,10 @@
 @component('mail::message')
-# Introduction
+# One more step before joining Miaacasts !
 
-The body of your message.
+Please confirm your email.
 
-@component('mail::button', ['url' => ''])
-Button Text
+@component('mail::button', ['url' => route('confirm-email') . '?token=' . $user->confirm_token])
+Confirm Email
 @endcomponent
 
 Thanks,<br>

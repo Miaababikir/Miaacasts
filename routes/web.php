@@ -15,7 +15,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Route::get('register/confirm', 'ConfirmEmailController@index')->name('confirm-email');
 
 Route::get('/logout', function () { auth()->logout(); });
+
+Auth::routes();
+
+
 Route::get('/home', 'HomeController@index')->name('home');
+
+
+Route::prefix('admin')->group(function () {
+    Route::resource('series', 'SeriesController');
+});

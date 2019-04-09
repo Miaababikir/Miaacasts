@@ -3,16 +3,19 @@
 namespace Tests\Feature;
 
 use App\Mail\ConfirmYourEmail;
+use App\User;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class RegistrationTest extends TestCase
 {
     /** @test */
     public function user_has_default_name_after_registration()
     {
+        Mail::fake();
+
+        $this->withExceptionHandling();
+
         $this->post('/register', [
             'name' => 'Mosab Ibrahim',
             'email' => 'miaababikir@gmail.com',
@@ -27,6 +30,24 @@ class RegistrationTest extends TestCase
     }
 
     /** @test */
+    public function a_user_has_test_after_registration()
+    {
+        Mail::fake();
+
+        $this->post('/register', [
+            'name' => 'Mosab Ibrahim',
+            'email' => 'miaababikir@gmail.com',
+            'password' => 'secret'
+        ]);
+
+        $user = User::find(1);
+
+        $this->assertNotNull($user->confirm_token);
+
+        $this->assertFalse($user->isConfirmed());
+    }
+
+    /** @test */
     public function an_email_is_send_to_new_registered_user()
     {
         Mail::fake();
@@ -38,8 +59,6 @@ class RegistrationTest extends TestCase
         ]);
 
         Mail::assertSent(ConfirmYourEmail::class);
-
-
     }
 
 }
